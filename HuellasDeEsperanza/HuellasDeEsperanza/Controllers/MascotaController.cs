@@ -10,22 +10,23 @@ using HuellasDeEsperanza.Models;
 
 namespace HuellasDeEsperanza.Controllers
 {
-    public class MascotasController : Controller
+    public class MascotaController : Controller
     {
         private readonly HDEDbContext _context;
 
-        public MascotasController(HDEDbContext context)
+        public MascotaController(HDEDbContext context)
         {
             _context = context;
         }
 
-        // GET: Mascotas
+        // GET: Mascota
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Mascotas.ToListAsync());
+            var hDEDbContext = _context.Mascotas.Include(m => m.Usuario);
+            return View(await hDEDbContext.ToListAsync());
         }
 
-        // GET: Mascotas/Details/5
+        // GET: Mascota/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,6 +35,7 @@ namespace HuellasDeEsperanza.Controllers
             }
 
             var mascota = await _context.Mascotas
+                .Include(m => m.Usuario)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (mascota == null)
             {
@@ -43,18 +45,19 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // GET: Mascotas/Create
+        // GET: Mascota/Create
         public IActionResult Create()
         {
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia");
             return View();
         }
 
-        // POST: Mascotas/Create
+        // POST: Mascota/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Edad")] Mascota mascota)
+        public async Task<IActionResult> Create([Bind("Id,Nombre,Descripcion,Imagen,FechaIngreso,TipoMascota,Tamanio,Estado,EstaVacunada,EstaCastrada,EstaDesparasitada,EstaDisponible,UsuarioId")] Mascota mascota)
         {
             if (ModelState.IsValid)
             {
@@ -62,10 +65,11 @@ namespace HuellasDeEsperanza.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", mascota.UsuarioId);
             return View(mascota);
         }
 
-        // GET: Mascotas/Edit/5
+        // GET: Mascota/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,15 +82,16 @@ namespace HuellasDeEsperanza.Controllers
             {
                 return NotFound();
             }
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", mascota.UsuarioId);
             return View(mascota);
         }
 
-        // POST: Mascotas/Edit/5
+        // POST: Mascota/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Edad")] Mascota mascota)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Descripcion,Imagen,FechaIngreso,TipoMascota,Tamanio,Estado,EstaVacunada,EstaCastrada,EstaDesparasitada,EstaDisponible,UsuarioId")] Mascota mascota)
         {
             if (id != mascota.Id)
             {
@@ -113,10 +118,11 @@ namespace HuellasDeEsperanza.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", mascota.UsuarioId);
             return View(mascota);
         }
 
-        // GET: Mascotas/Delete/5
+        // GET: Mascota/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -125,6 +131,7 @@ namespace HuellasDeEsperanza.Controllers
             }
 
             var mascota = await _context.Mascotas
+                .Include(m => m.Usuario)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (mascota == null)
             {
@@ -134,7 +141,7 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // POST: Mascotas/Delete/5
+        // POST: Mascota/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
