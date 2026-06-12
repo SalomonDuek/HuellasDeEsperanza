@@ -15,11 +15,17 @@ namespace HuellasDeEsperanza.Controllers
 
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetInt32("UsuarioId") == null)
+                return RedirectToAction("Login", "Usuarios");
+
             return View();
         }
 
         public IActionResult Privacy()
         {
+            if (HttpContext.Session.GetInt32("UsuarioId") == null)
+                return RedirectToAction("Login", "Usuarios");
+
             return View();
         }
 
