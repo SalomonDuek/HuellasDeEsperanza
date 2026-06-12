@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HuellasDeEsperanza.Data;
 using HuellasDeEsperanza.Models;
@@ -13,147 +8,202 @@ namespace HuellasDeEsperanza.Controllers
     public class MascotaController : Controller
     {
         private readonly HDEDbContext _context;
+        private readonly IWebHostEnvironment _env;
+        // Definimos la constante para que no haya errores de tipeo en las rutas
+        private const string CARPETA_FOTOS = "images/mascotas";
 
-        public MascotaController(HDEDbContext context)
+        public MascotaController(HDEDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
-        // GET: Mascota
+        // GET: Mascotas
         public async Task<IActionResult> Index()
         {
-            var hDEDbContext = _context.Mascotas.Include(m => m.Usuario);
-            return View(await hDEDbContext.ToListAsync());
+            return View(await _context.Mascotas.Include(m => m.Usuario).ToListAsync());
         }
 
-        // GET: Mascota/Details/5
+        // GET: Mascotas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var mascota = await _context.Mascotas
                 .Include(m => m.Usuario)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (mascota == null)
-            {
-                return NotFound();
-            }
 
+            if (mascota == null) return NotFound();
             return View(mascota);
         }
 
-        // GET: Mascota/Create
-        public IActionResult Create()
-        {
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia");
-            return View();
-        }
+        // GET: Mascotas/Create
+        public IActionResult Create() => View();
 
-        // POST: Mascota/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Mascotas/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Descripcion,Imagen,FechaIngreso,TipoMascota,Tamanio,Estado,EstaVacunada,EstaCastrada,EstaDesparasitada,EstaDisponible,UsuarioId")] Mascota mascota)
+        public async Task<IActionResult> Create(
+            [Bind("Id,Nombre,Descripcion,TipoMascota,Tamanio,Estado,EstaVacunada,EstaCastrada,EstaDesparasitada,EstaDisponible,UsuarioId")]
+            Mascota mascota,
+            IFormFile? imagenArchivo)
         {
+            mascota.FechaIngreso = DateTime.Now;
+
+            if (mascota.TipoMascota != TipoMascota.Perro && mascota.TipoMascota != TipoMascota.Gato)
+            {
+                ModelState.AddModelError("TipoMascota", "Solo se aceptan perros y gatos en el refugio");
+            }
+
+            if (mascota.Estado == EstadoMedico.AmbulatorioConBaja && mascota.EstaDisponible)
+            {
+                ModelState.AddModelError("EstaDisponible", "Una mascota con Ambulatorio con Baja no puede estar disponible para adopción/tránsito");
+                mascota.EstaDisponible = false;
+            }
+
             if (ModelState.IsValid)
             {
+                // LÓGICA DE ALMACENAMIENTO EXCLUSIVO
+                if (imagenArchivo != null && imagenArchivo.Length > 0)
+                {
+                    mascota.Imagen = await GuardarImagenAsync(imagenArchivo);
+                }
+                else
+                {
+                    mascota.Imagen = string.Empty; // O una imagen por defecto si lo preferís
+                }
+
                 _context.Add(mascota);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", mascota.UsuarioId);
             return View(mascota);
         }
 
-        // GET: Mascota/Edit/5
+        // GET: Mascotas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+            if (id == null) return NotFound();
             var mascota = await _context.Mascotas.FindAsync(id);
-            if (mascota == null)
-            {
-                return NotFound();
-            }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", mascota.UsuarioId);
+            if (mascota == null) return NotFound();
             return View(mascota);
         }
 
-        // POST: Mascota/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Mascotas/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Descripcion,Imagen,FechaIngreso,TipoMascota,Tamanio,Estado,EstaVacunada,EstaCastrada,EstaDesparasitada,EstaDisponible,UsuarioId")] Mascota mascota)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,Nombre,Descripcion,TipoMascota,Tamanio,Estado,EstaVacunada,EstaCastrada,EstaDesparasitada,EstaDisponible,UsuarioId")]
+            Mascota mascota,
+            IFormFile? imagenArchivo)
         {
-            if (id != mascota.Id)
+            if (id != mascota.Id) return NotFound();
+
+            if (mascota.Estado == EstadoMedico.AmbulatorioConBaja && mascota.EstaDisponible)
             {
-                return NotFound();
+                ModelState.AddModelError("EstaDisponible", "Una mascota con Ambulatorio con Baja no puede estar disponible");
+                mascota.EstaDisponible = false;
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(mascota);
+                    // Recuperamos la entidad desde DB para evitar problemas de binding (ej: FechaIngreso)
+                    var mascotaDb = await _context.Mascotas.FindAsync(id);
+                    if (mascotaDb == null) return NotFound();
+
+                    // Actualizamos solo los campos permitidos
+                    mascotaDb.Nombre = mascota.Nombre;
+                    mascotaDb.Descripcion = mascota.Descripcion;
+                    mascotaDb.TipoMascota = mascota.TipoMascota;
+                    mascotaDb.Tamanio = mascota.Tamanio;
+                    mascotaDb.Estado = mascota.Estado;
+                    mascotaDb.EstaVacunada = mascota.EstaVacunada;
+                    mascotaDb.EstaCastrada = mascota.EstaCastrada;
+                    mascotaDb.EstaDesparasitada = mascota.EstaDesparasitada;
+                    mascotaDb.EstaDisponible = mascota.EstaDisponible;
+                    mascotaDb.UsuarioId = mascota.UsuarioId;
+
+                    if (imagenArchivo != null && imagenArchivo.Length > 0)
+                    {
+                        // Borramos la foto anterior y guardamos la nueva
+                        EliminarImagenExistente(mascotaDb.Imagen);
+                        mascotaDb.Imagen = await GuardarImagenAsync(imagenArchivo);
+                    }
+
+                    _context.Update(mascotaDb);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MascotaExists(mascota.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!MascotaExists(id)) return NotFound();
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", mascota.UsuarioId);
+
+            // Si hay errores de validación, recargamos la vista con el modelo enviado (no guardado)
             return View(mascota);
         }
 
-        // GET: Mascota/Delete/5
+        // GET: Mascotas/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var mascota = await _context.Mascotas
-                .Include(m => m.Usuario)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (mascota == null)
-            {
-                return NotFound();
-            }
-
+            if (id == null) return NotFound();
+            var mascota = await _context.Mascotas.FirstOrDefaultAsync(m => m.Id == id);
+            if (mascota == null) return NotFound();
             return View(mascota);
         }
 
-        // POST: Mascota/Delete/5
+        // POST: Mascotas/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var mascota = await _context.Mascotas.FindAsync(id);
             if (mascota != null)
             {
+                // Al eliminar la mascota, también limpiamos su foto del servidor
+                EliminarImagenExistente(mascota.Imagen);
                 _context.Mascotas.Remove(mascota);
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // ==========================================
+        // MÉTODOS DE INFRAESTRUCTURA PARA IMÁGENES
+        // ==========================================
+
+        private async Task<string> GuardarImagenAsync(IFormFile archivo)
+        {
+            // Asegura la ruta absoluta hacia wwwroot/images/mascotas
+            var carpeta = Path.Combine(_env.WebRootPath, CARPETA_FOTOS);
+
+            // Si la carpeta no existe, la crea automáticamente
+            if (!Directory.Exists(carpeta))
+            {
+                Directory.CreateDirectory(carpeta);
+            }
+
+            var extension = Path.GetExtension(archivo.FileName);
+            // Evitamos colisiones de nombres usando GUIDs
+            var nombreArchivo = $"{Guid.NewGuid()}{extension}";
+            var rutaCompleta = Path.Combine(carpeta, nombreArchivo);
+
+            using var stream = new FileStream(rutaCompleta, FileMode.Create);
+            await archivo.CopyToAsync(stream);
+
+            return nombreArchivo;
+        }
+
+        private void EliminarImagenExistente(string? nombreImagen)
+        {
+            if (string.IsNullOrEmpty(nombreImagen)) return;
+
+            var rutaArchivo = Path.Combine(_env.WebRootPath, CARPETA_FOTOS, nombreImagen);
+            if (System.IO.File.Exists(rutaArchivo))
+            {
+                System.IO.File.Delete(rutaArchivo);
+            }
         }
 
         private bool MascotaExists(int id)
