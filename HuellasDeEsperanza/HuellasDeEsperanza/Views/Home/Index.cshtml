@@ -1,8 +1,54 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
+    bool logueado = Context.Session.GetString("UsuarioSesion") != null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center my-5 py-4">
+    <h1 class="display-4" style="color: #285882; font-weight: bold;">Bienvenidos a Huellas de Esperanza</h1>
+    <p class="lead">Gestionando el refugio con tecnología para encontrar hogares definitivos en CABA.</p>
+    <hr class="my-4" style="max-width: 600px; margin: 0 auto;">
 </div>
+
+<main class="container">
+
+    <section class="row align-items-center my-5">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <img src="~/images/perro.png" class="img-fluid rounded shadow" alt="Perro esperando adopción" />
+        </div>
+        <div class="col-md-6">
+            <h2 style="color: #e83e8c; font-weight: bold;">Adoptá una mascota</h2>
+            <p><strong>"Un hogar no está completo sin huellas."</strong></p>
+            <p>Adoptar es mucho más que traer un animal a casa; es salvar una vida que ha esperado con paciencia por vos. Al abrirles tu puerta, no solo les das un techo, sino la seguridad de que nunca más volverán a sentirse solos.</p>
+
+            @if (logueado)
+            {
+                <a asp-controller="Mascota" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver mascotas disponibles</a>
+            }
+            else
+            {
+                <a asp-controller="Usuarios" asp-action="Register" class="btn btn-primary btn-lg mt-2">Quiero adoptar</a>
+            }
+        </div>
+    </section>
+
+    <section class="row align-items-center my-5 flex-md-row-reverse">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <img src="~/images/gato.png" class="img-fluid rounded shadow" alt="Gato en tránsito" />
+        </div>
+        <div class="col-md-6">
+            <h2 style="color: #e83e8c; font-weight: bold;">Convertite en tránsito</h2>
+            <p><strong>"Un lugar temporal para un cambio permanente."</strong></p>
+            <p>Al convertirte en hogar de tránsito, liberás un lugar en nuestro refugio para que podamos rescatar a otro animal en peligro. Tu casa se convierte en el primer paso hacia su nueva vida.</p>
+
+            @if (logueado)
+            {
+                <a asp-controller="Mascota" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver mascotas para tránsito</a>
+            }
+            else
+            {
+                <a asp-controller="Usuarios" asp-action="Register" class="btn btn-primary btn-lg mt-2">Quiero ser tránsito</a>
+            }
+        </div>
+    </section>
+
+</main>

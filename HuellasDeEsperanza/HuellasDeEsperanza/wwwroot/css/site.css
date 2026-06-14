@@ -1,22 +1,73 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 
 body {
-  margin-bottom: 60px;
+    background-color: #f8f9fa;
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
 }
+
+#barra_de_navegacion {
+    background-color: #285882;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+#logo {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px;
+}
+
+#barra_de_navegacion a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+footer {
+    background-color: #404040;
+    color: white;
+    padding: 10px 5px;
+    width: 100%;
+}
+
+footer h5 {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+footer p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: white;
+}
+
+footer a:hover {
+    color: #e83e8c;
+    text-decoration: none;
+}
+
+
+footer .fs-2 a {
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+footer .fs-2 a:hover {
+    transform: scale(1.2);
+}
+
+#facebook:hover {color: #1877f2 !important;}
+#instagram:hover {color: #e83e8c !important;}
+#whatsapp:hover {color: #25d366 !important;}
+#mail:hover {color: #ff6b6b !important;}
