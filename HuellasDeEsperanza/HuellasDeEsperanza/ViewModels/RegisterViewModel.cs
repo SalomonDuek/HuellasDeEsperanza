@@ -1,24 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HuellasDeEsperanza.Models
+namespace HuellasDeEsperanza.ViewModels
 {
-    public enum TipoVivienda
+    public class RegisterViewModel
     {
-        Casa,
-        Departamento
-    }
-
-    public enum RolUsuario
-    {
-        Admin,      // Creado a mano en la DB o por otro Admin
-        Empleado,   // Lo crea el Admin desde el panel
-        Adoptante   // Se registra solo — rol por defecto
-    }
-
-    public class Usuario
-    {
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "El nombre es obligatorio")]
         [StringLength(100)]
         public string Nombre { get; set; } = string.Empty;
@@ -36,20 +21,18 @@ namespace HuellasDeEsperanza.Models
         [MinLength(6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
         public string Contrasenia { get; set; } = string.Empty;
 
-        // Siempre Adoptante al registrarse. Admin lo cambia después si hace falta
-        public RolUsuario Rol { get; set; } = RolUsuario.Adoptante;
+        [Required(ErrorMessage = "Confirmá la contraseña")]
+        [DataType(DataType.Password)]
+        [Compare("Contrasenia", ErrorMessage = "Las contraseñas no coinciden")]
+        public string ConfirmarContrasenia { get; set; } = string.Empty;
 
-        public TipoVivienda TipoVivienda { get; set; }
+        // Datos de vivienda
+        public HuellasDeEsperanza.Models.TipoVivienda TipoVivienda { get; set; }
 
         [Range(0, 15, ErrorMessage = "Máximo 15 mascotas")]
         public int CantidadDeMascotas { get; set; } = 0;
 
         [StringLength(200)]
         public string Direccion { get; set; } = string.Empty;
-
-        // Relaciones
-        public ICollection<Mascota> Mascotas { get; set; } = [];
-        public ICollection<Solicitud> Solicitudes { get; set; } = [];
-        public ICollection<Solicitud> SolicitudesAuditadas { get; set; } = [];
     }
 }

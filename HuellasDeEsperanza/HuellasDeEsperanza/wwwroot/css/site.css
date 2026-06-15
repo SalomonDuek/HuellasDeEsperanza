@@ -71,3 +71,90 @@ footer .fs-2 a:hover {
 #instagram:hover {color: #e83e8c !important;}
 #whatsapp:hover {color: #25d366 !important;}
 #mail:hover {color: #ff6b6b !important;}
+
+
+
+/* CSS ESPECIAL PARA LOS FORMULARIOS*/
+
+/* Contenedor del Formulario (Tarjetas) */
+.card-form {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(40, 88, 130, 0.15);
+    border: 1px solid rgba(40, 88, 130, 0.1);
+    margin-top: 20px;
+}
+
+    /* Título de la Sección del Formulario */
+    .card-form .titulo-seccion {
+        color: #285882;
+        font-weight: 700;
+        font-size: 2rem;
+        position: relative;
+    }
+
+    /* Inputs y Selects del Formulario */
+    .card-form .form-control,
+    .card-form .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+
+        /* Enfoque de los campos con el azul del Refugio */
+        .card-form .form-control:focus,
+        .card-form .form-select:focus {
+            border-color: #285882;
+            box-shadow: 0 0 0 0.25rem rgba(40, 88, 130, 0.25);
+            background-color: #fff;
+        }
+
+/* El Botón Oficial del Refugio (btn-hde) */
+.btn-hde {
+    background-color: #e83e8c; /* Rosa identitario del HTML original */
+    color: white;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .btn-hde:hover {
+        background-color: #d12a75;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(232, 62, 140, 0.3);
+    }
+
+    .btn-hde:active {
+        transform: translateY(0);
+    }
+
+/* Separadores y Links */
+.card-form hr {
+    border-top: 1px solid rgba(40, 88, 130, 0.2);
+}
+
+.card-form a {
+    color: #285882;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+    .card-form a:hover {
+        color: #1a3a57;
+        text-decoration: underline;
+    }
+
+/* Validaciones de Error de .NET */
+.text-danger.small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 4px;
+    display: block;
+}
