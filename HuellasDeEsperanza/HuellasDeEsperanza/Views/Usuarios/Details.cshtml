@@ -1,66 +1,93 @@
 ﻿@model HuellasDeEsperanza.Models.Usuario
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Usuario";
 }
 
-<h1>Details</h1>
+<div class="row align-items-start">
 
-<div>
-    <h4>Usuario</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Edad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Edad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Mail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Mail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Contrasenia)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Contrasenia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rol)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rol)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoVivienda)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoVivienda)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CantidadDeMascotas)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CantidadDeMascotas)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Direccion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Direccion)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- IMAGEN -->
+    <div class="col-md-4 mb-4">
+        @if (!string.IsNullOrEmpty(Model.Imagen))
+        {
+            <img src="~/images/usuarios/@Model.Imagen"
+                 alt="@Model.Nombre"
+                 class="img-fluid rounded border shadow-sm w-100"
+                 style="height: 420px; object-fit: cover;" />
+        }
+        else
+        {
+            <div class="bg-light border rounded d-flex align-items-center justify-content-center shadow-sm"
+                 style="height:420px;">
+                <span class="text-muted fw-bold">Sin foto registrada</span>
+            </div>
+        }
+    </div>
+
+    <!-- DATOS -->
+    <div class="col-md-8">
+
+        <div class="bg-white p-4 rounded border shadow-sm h-100">
+
+            <h4 class="mb-4 text-secondary">Datos del Usuario</h4>
+
+            <dl class="row mb-0">
+
+                <dt class="col-sm-4 text-muted">Nombre Completo</dt>
+                <dd class="col-sm-8">@Model.Nombre</dd>
+
+                <dt class="col-sm-4 text-muted">Edad</dt>
+                <dd class="col-sm-8">@Model.Edad</dd>
+
+                <dt class="col-sm-4 text-muted">Mail</dt>
+                <dd class="col-sm-8">@Model.Mail</dd>
+
+                <dt class="col-sm-4 text-muted">Rol</dt>
+                <dd class="col-sm-8">@Model.Rol</dd>
+
+                <dt class="col-sm-4 text-muted">Tipo de vivienda</dt>
+                <dd class="col-sm-8">@Model.TipoVivienda</dd>
+
+                <dt class="col-sm-4 text-muted">Cantidad de mascotas</dt>
+                <dd class="col-sm-8">@Model.CantidadDeMascotas</dd>
+
+                <dt class="col-sm-4 text-muted">Dirección</dt>
+                <dd class="col-sm-8">@Model.Direccion</dd>
+
+                @if (Model.Mascotas != null && Model.Mascotas.Any())
+                {
+                    <dt class="col-sm-4 text-muted">Mascotas asignadas</dt>
+
+                    <dd class="col-sm-8">
+                        @foreach (var mascota in Model.Mascotas)
+                        {
+                            <div class="text-primary fw-bold">
+                                @mascota.Nombre
+                            </div>
+                        }
+                    </dd>
+                }
+                else
+                {
+                    <dt class="col-sm-4 text-muted">Mascotas asignadas</dt>
+
+                    <dd class="col-sm-8 text-muted fw-bold">
+                        Sin mascotas asignadas
+                    </dd>
+                }
+
+            </dl>
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-4">
+                Editar Datos
+            </a>
+
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Volver al Listado
+            </a>
+        </div>
+
+    </div>
 </div>

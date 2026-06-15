@@ -49,6 +49,7 @@ namespace HuellasDeEsperanza.Models
 
         [StringLength(200)]
         public string Direccion { get; set; } = string.Empty;
+        public string Imagen { get; set; } = string.Empty;
 
         // Relaciones
         public ICollection<Mascota> Mascotas { get; set; } = new List<Mascota>();

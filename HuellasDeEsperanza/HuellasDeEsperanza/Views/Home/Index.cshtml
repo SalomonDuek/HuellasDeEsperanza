@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
-    bool logueado = Context.Session.GetString("UsuarioSesion") != null;
+    bool logueado = Context.Session.GetString("UsuarioSesion") == null; // MICA cambie a == null
 }
 
 <div class="text-center my-5 py-4">
@@ -23,6 +23,7 @@
             @if (logueado)
             {
                 <a asp-controller="Mascota" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver mascotas disponibles</a>
+                <a asp-controller="Usuarios" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver usuarios</a> // Agregado botón para ver usuarios MICA
             }
             else
             {
