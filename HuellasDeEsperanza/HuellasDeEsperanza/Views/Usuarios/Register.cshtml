@@ -1,0 +1,93 @@
+﻿@model HuellasDeEsperanza.ViewModels.RegisterViewModel
+@using HuellasDeEsperanza.Models
+
+@{
+    ViewData["Title"] = "Registrarse";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card-form">
+                <h2 class="titulo-seccion text-center mb-4">Crear cuenta</h2>
+
+                <form asp-action="Register">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+
+                    <h6 class="text-muted mb-3">Datos personales</h6>
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="Nombre" class="form-label fw-semibold"></label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Tu nombre completo" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Edad" class="form-label fw-semibold"></label>
+                            <input asp-for="Edad" class="form-control" type="number" min="18" max="120" />
+                            <span asp-validation-for="Edad" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Mail" class="form-label fw-semibold"></label>
+                        <input asp-for="Mail" class="form-control" placeholder="tu@mail.com" />
+                        <span asp-validation-for="Mail" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Contrasenia" class="form-label fw-semibold"></label>
+                            <input asp-for="Contrasenia" class="form-control" placeholder="Mínimo 6 caracteres" />
+                            <span asp-validation-for="Contrasenia" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ConfirmarContrasenia" class="form-label fw-semibold"></label>
+                            <input asp-for="ConfirmarContrasenia" class="form-control" placeholder="Repetí la contraseña" />
+                            <span asp-validation-for="ConfirmarContrasenia" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-3" />
+                    <h6 class="text-muted mb-3">Datos de vivienda</h6>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TipoVivienda" class="form-label fw-semibold"></label>
+                            <select asp-for="TipoVivienda" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<TipoVivienda>()"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CantidadDeMascotas" class="form-label fw-semibold"></label>
+                            <input asp-for="CantidadDeMascotas" class="form-control"
+                                   type="number" min="0" max="15" />
+                            <span asp-validation-for="CantidadDeMascotas" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Direccion" class="form-label fw-semibold"></label>
+                        <input asp-for="Direccion" class="form-control" placeholder="Tu dirección" />
+                        <span asp-validation-for="Direccion" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-hde">Registrarse</button>
+                    </div>
+                </form>
+
+                <hr class="my-4" />
+                <p class="text-center mb-0">
+                    ¿Ya tenés cuenta?
+                    <a asp-action="Login" class="fw-semibold" style="color:#285882;">Iniciá sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

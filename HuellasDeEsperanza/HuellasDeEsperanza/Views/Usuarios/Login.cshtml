@@ -1,0 +1,47 @@
+﻿@model HuellasDeEsperanza.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card-form">
+                <h2 class="titulo-seccion text-center mb-4">Iniciar sesión</h2>
+
+                <form asp-action="Login">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Mail" class="form-label fw-semibold"></label>
+                        <input asp-for="Mail" class="form-control" placeholder="tu@mail.com" />
+                        <span asp-validation-for="Mail" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Contrasenia" class="form-label fw-semibold"></label>
+                        <input asp-for="Contrasenia" class="form-control" placeholder="••••••" />
+                        <span asp-validation-for="Contrasenia" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-hde">Ingresar</button>
+                    </div>
+                </form>
+
+                <hr class="my-4" />
+                <p class="text-center mb-0">
+                    ¿No tenés cuenta?
+                    <a asp-action="Register" class="fw-semibold" style="color:#285882;">Registrate acá</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
