@@ -69,7 +69,7 @@ namespace HuellasDeEsperanza.Controllers
                 }
                 else
                 {
-                    mascota.Imagen = string.Empty; // O una imagen por defecto si lo preferís
+                    mascota.Imagen = string.Empty; // O una imagen por defecto si lo prefiero
                 }
 
                 _context.Add(mascota);
