@@ -5,8 +5,7 @@ namespace HuellasDeEsperanza.Models
     public enum TipoSolicitud
     {
         Adopcion,
-        Transito,
-        Donacion
+        Transito
     }
 
     public enum EstadoSolicitud

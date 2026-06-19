@@ -75,6 +75,31 @@ namespace HuellasDeEsperanza.Controllers
             return View(solicitud);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CrearSolicitud(int mascotaId)
+        {
+            var solicitud = new Solicitud
+            {
+                Tipo = TipoSolicitud.Adopcion,
+                Estado = EstadoSolicitud.Pendiente,
+                FechaCreacion = DateTime.Now,
+
+                // cambiar por el usuario logueado después
+                UsuarioId = 3,
+
+                MascotaId = mascotaId
+            };
+
+            _context.Solicitudes.Add(solicitud);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Mascota");
+        }
+
+
+
         // GET: Solicitud/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

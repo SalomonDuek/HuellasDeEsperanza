@@ -56,6 +56,13 @@
                     <a asp-action="Details" asp-route-id="@mascota.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
                     <a asp-action="Edit" asp-route-id="@mascota.Id" class="btn btn-sm btn-outline-primary">Editar</a>
                     <a asp-action="Delete" asp-route-id="@mascota.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    <form asp-controller="Solicitud" asp-action="CrearSolicitud" method="post">
+                        <input type="hidden" name="mascotaId" value="@mascota.Id" />
+
+                        <button type="submit" class="btn btn-primary btn-lg mt-2">
+                            Adoptar
+                        </button>
+                    </form>
                 </td>
             </tr>
         }
