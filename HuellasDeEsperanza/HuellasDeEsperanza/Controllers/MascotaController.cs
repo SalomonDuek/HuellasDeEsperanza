@@ -24,10 +24,9 @@ namespace HuellasDeEsperanza.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.TipoVista = "General";
-
             return View(await _context.Mascotas
                 .Include(m => m.Usuario)
+                .Where(m => !m.Adoptado && !m.Transitado)
                 .ToListAsync());
         }
 

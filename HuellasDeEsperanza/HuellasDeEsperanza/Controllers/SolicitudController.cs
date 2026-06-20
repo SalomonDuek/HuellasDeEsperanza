@@ -20,14 +20,13 @@ namespace HuellasDeEsperanza.Controllers
         }
 
         // GET: Solicitud
-       
+
         public async Task<IActionResult> Index()
         {
             var solicitudes = await _context.Solicitudes
                 .Include(s => s.AuditadoPor)
                 .Include(s => s.Mascota)
                 .Include(s => s.Usuario)
-                .Where(s => s.Estado != EstadoSolicitud.Aceptada)
                 .ToListAsync();
 
             return View(solicitudes);
@@ -318,8 +317,7 @@ namespace HuellasDeEsperanza.Controllers
                         "El usuario ya posee una mascota en tránsito.";
                 }
 
-                // ELIMINAR SOLICITUD RECHAZADA
-                _context.Solicitudes.Remove(solicitud);
+               
             }
 
             await _context.SaveChangesAsync();
