@@ -6,9 +6,7 @@
 
 <h2>Mascotas</h2>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Agregar mascota</a>
-</p>
+
 
 <table class="table table-striped align-middle">
     <thead>
@@ -18,10 +16,11 @@
             <th>Tipo</th>
             <th>Tamaño</th>
             <th>Estado</th>
-            <th>Disponible</th>
+            <th>Disponibilidad</th>
             <th></th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var mascota in Model)
         {
@@ -38,31 +37,71 @@
                         <span class="text-muted">Sin foto</span>
                     }
                 </td>
-                <td>@mascota.Nombre</td>
-                <td>@mascota.TipoMascota</td>
-                <td>@mascota.Tamanio</td>
-                <td>@mascota.Estado</td>
-                <td>
-                    @if (mascota.EstaDisponible)
-                    {
-                        <span class="badge bg-success">Sí</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">No</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@mascota.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
-                    <a asp-action="Edit" asp-route-id="@mascota.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@mascota.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                    <form asp-controller="Solicitud" asp-action="CrearSolicitud" method="post">
-                        <input type="hidden" name="mascotaId" value="@mascota.Id" />
 
-                        <button type="submit" class="btn btn-primary btn-lg mt-2">
-                            Adoptar
-                        </button>
-                    </form>
+                <td>@mascota.Nombre</td>
+
+                <td>@mascota.TipoMascota</td>
+
+                <td>@mascota.Tamanio</td>
+
+                <td>@mascota.Estado</td>
+
+                <td>@mascota.Disponibilidad</td>
+
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@mascota.Id"
+                       class="btn btn-sm btn-outline-secondary">
+                        Ver
+                    </a>
+
+                    <a asp-action="Edit"
+                       asp-route-id="@mascota.Id"
+                       class="btn btn-sm btn-outline-primary">
+                        Editar
+                    </a>
+
+                    <a asp-action="Delete"
+                       asp-route-id="@mascota.Id"
+                       class="btn btn-sm btn-outline-danger">
+                        Eliminar
+                    </a>
+
+                    @if (ViewBag.TipoVista == "Adopcion")
+                    {
+                        <form asp-controller="Solicitud"
+                              asp-action="CrearSolicitudAdopcion"
+                              method="post"
+                              class="mt-2">
+
+                            <input type="hidden"
+                                   name="mascotaId"
+                                   value="@mascota.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-success btn-sm">
+                                Adoptar
+                            </button>
+                        </form>
+                    }
+                    else if (ViewBag.TipoVista == "Transito")
+                    {
+                        <form asp-controller="Solicitud"
+                              asp-action="CrearSolicitudTransito"
+                              method="post"
+                              class="mt-2">
+
+                            <input type="hidden"
+                                   name="mascotaId"
+                                   value="@mascota.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-warning btn-sm">
+                                Solicitar tránsito
+                            </button>
+                        </form>
+                    }
+
                 </td>
             </tr>
         }
