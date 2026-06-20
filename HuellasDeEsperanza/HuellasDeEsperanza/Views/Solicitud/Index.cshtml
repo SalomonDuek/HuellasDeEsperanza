@@ -69,7 +69,14 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                    <form asp-action="Verificar" method="post">
+                        <input type="hidden" name="id" value="@item.Id" />
+
+                        <button type="submit" class="btn btn-success btn-sm">
+                            Verificar
+                        </button>
+                    </form>
             </td>
         </tr>
 }

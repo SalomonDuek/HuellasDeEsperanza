@@ -207,6 +207,97 @@ namespace HuellasDeEsperanza.Controllers
             return View("Index", mascotas);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Verificar(int id)
+        {
+            var solicitud = await _context.Solicitudes
+                .Include(s => s.Usuario)
+                .Include(s => s.Mascota)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (solicitud == null)
+            {
+                return NotFound();
+            }
+
+            bool aceptada = false;
+
+            // ==========================================
+            // VALIDAR SOLICITUD DE ADOPCIÓN
+            // ==========================================
+
+            if (solicitud.Tipo == TipoSolicitud.Adopcion)
+            {
+                // Si vive en casa -> cualquier tamaño
+                if (solicitud.Usuario.TipoVivienda == TipoVivienda.Casa)
+                {
+                    aceptada = true;
+                }
+
+                // Si vive en departamento -> chico o mediano
+                else if (
+                    solicitud.Usuario.TipoVivienda == TipoVivienda.Departamento
+                    &&
+                    (
+                        solicitud.Mascota.Tamanio == Tamanio.Chico
+                        ||
+                        solicitud.Mascota.Tamanio == Tamanio.Mediano
+                    )
+                )
+                {
+                    aceptada = true;
+                }
+
+                // Si se acepta la adopción
+                if (aceptada)
+                {
+                    solicitud.Mascota.Adoptado = true;
+
+                    // dueño de la mascota
+                    solicitud.Mascota.UsuarioId = solicitud.UsuarioId;
+                }
+            }
+
+            // ==========================================
+            // VALIDAR SOLICITUD DE TRÁNSITO
+            // ==========================================
+
+            else if (solicitud.Tipo == TipoSolicitud.Transito)
+            {
+                bool yaTieneTransito = await _context.Mascotas
+                    .AnyAsync(m =>
+                        m.UsuarioId == solicitud.UsuarioId
+                        && m.Transitado);
+
+                // Solo puede tener un tránsito
+                if (!yaTieneTransito)
+                {
+                    aceptada = true;
+
+                    solicitud.Mascota.Transitado = true;
+
+                    // usuario tránsito
+                    solicitud.Mascota.UsuarioId = solicitud.UsuarioId;
+                }
+            }
+
+            // ==========================================
+            // RESULTADO FINAL
+            // ==========================================
+
+            solicitud.Estado = aceptada
+                ? EstadoSolicitud.Aceptada
+                : EstadoSolicitud.Rechazada;
+
+            solicitud.FechaAuditoria = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
         // GET: Solicitud/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

@@ -24,6 +24,8 @@ namespace HuellasDeEsperanza.Controllers
 
         public async Task<IActionResult> Index()
         {
+            ViewBag.TipoVista = "General";
+
             return View(await _context.Mascotas
                 .Include(m => m.Usuario)
                 .ToListAsync());
@@ -35,6 +37,8 @@ namespace HuellasDeEsperanza.Controllers
 
         public async Task<IActionResult> Adopcion()
         {
+            ViewBag.TipoVista = "Adopcion";
+
             var mascotas = await _context.Mascotas
                 .Where(m =>
                     m.Disponibilidad == Disponibilidad.Adoptable
@@ -50,6 +54,8 @@ namespace HuellasDeEsperanza.Controllers
 
         public async Task<IActionResult> Transito()
         {
+            ViewBag.TipoVista = "Transito";
+
             var mascotas = await _context.Mascotas
                 .Where(m =>
                     m.Disponibilidad == Disponibilidad.Transitable
@@ -58,6 +64,7 @@ namespace HuellasDeEsperanza.Controllers
 
             return View("Index", mascotas);
         }
+
         // ==========================================
         // DETAILS
         // ==========================================
@@ -99,7 +106,7 @@ namespace HuellasDeEsperanza.Controllers
             mascota.FechaIngreso = DateTime.Now;
 
             // ==========================================
-            // VALIDACIÓN DE ESTADO MÉDICO
+            // CALCULAR ESTADO MÉDICO
             // ==========================================
 
             if (mascota.EstaVacunada &&
@@ -133,6 +140,7 @@ namespace HuellasDeEsperanza.Controllers
                 }
 
                 _context.Add(mascota);
+
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
@@ -266,17 +274,16 @@ namespace HuellasDeEsperanza.Controllers
 
             if (mascota != null)
             {
-                // Buscar solicitudes asociadas
+                // BORRAR SOLICITUDES RELACIONADAS
                 var solicitudes = _context.Solicitudes
                     .Where(s => s.MascotaId == mascota.Id);
 
-                // Borrar solicitudes primero
                 _context.Solicitudes.RemoveRange(solicitudes);
 
-                // Borrar imagen
+                // BORRAR IMAGEN
                 EliminarImagenExistente(mascota.Imagen);
 
-                // Borrar mascota
+                // BORRAR MASCOTA
                 _context.Mascotas.Remove(mascota);
             }
 
