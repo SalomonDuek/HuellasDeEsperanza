@@ -61,6 +61,13 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
+    <a asp-action="Index">Volver al listado</a>
+    <form asp-action="Verificar" method="post">
+        <input type="hidden" name="id" value="@Model?.Id" />
+
+        <button type="submit" class="btn btn-success btn-sm">
+            Verificar
+        </button>
+    </form>
 </div>

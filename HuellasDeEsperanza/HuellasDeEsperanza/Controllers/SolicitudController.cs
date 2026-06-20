@@ -20,12 +20,18 @@ namespace HuellasDeEsperanza.Controllers
         }
 
         // GET: Solicitud
+       
         public async Task<IActionResult> Index()
         {
-            var hDEDbContext = _context.Solicitudes.Include(s => s.AuditadoPor).Include(s => s.Mascota).Include(s => s.Usuario);
-            return View(await hDEDbContext.ToListAsync());
-        }
+            var solicitudes = await _context.Solicitudes
+                .Include(s => s.AuditadoPor)
+                .Include(s => s.Mascota)
+                .Include(s => s.Usuario)
+                .Where(s => s.Estado != EstadoSolicitud.Aceptada)
+                .ToListAsync();
 
+            return View(solicitudes);
+        }
         // GET: Solicitud/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,9 +56,9 @@ namespace HuellasDeEsperanza.Controllers
         // GET: Solicitud/Create
         public IActionResult Create()
         {
-            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia");
+            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Nombre");
             ViewData["MascotaId"] = new SelectList(_context.Mascotas, "Id", "Descripcion");
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia");
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Nombre");
             return View();
         }
 
@@ -69,9 +75,9 @@ namespace HuellasDeEsperanza.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.AuditadoPorId);
+            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.AuditadoPorId);
             ViewData["MascotaId"] = new SelectList(_context.Mascotas, "Id", "Descripcion", solicitud.MascotaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.UsuarioId);
             return View(solicitud);
         }
 
@@ -120,19 +126,6 @@ namespace HuellasDeEsperanza.Controllers
             return RedirectToAction("Index", "Mascota");
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         // GET: Solicitud/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -146,9 +139,9 @@ namespace HuellasDeEsperanza.Controllers
             {
                 return NotFound();
             }
-            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.AuditadoPorId);
+            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.AuditadoPorId);
             ViewData["MascotaId"] = new SelectList(_context.Mascotas, "Id", "Descripcion", solicitud.MascotaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.UsuarioId);
             return View(solicitud);
         }
 
@@ -184,9 +177,9 @@ namespace HuellasDeEsperanza.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.AuditadoPorId);
+            ViewData["AuditadoPorId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.AuditadoPorId);
             ViewData["MascotaId"] = new SelectList(_context.Mascotas, "Id", "Descripcion", solicitud.MascotaId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.UsuarioId);
             return View(solicitud);
         }
         public async Task<IActionResult> Adopcion()
@@ -222,19 +215,22 @@ namespace HuellasDeEsperanza.Controllers
 
             bool aceptada = false;
 
+            // limpiar detalle anterior
+            solicitud.DetalleRechazo = null;
+
             // ==========================================
             // VALIDAR SOLICITUD DE ADOPCIÓN
             // ==========================================
 
             if (solicitud.Tipo == TipoSolicitud.Adopcion)
             {
-                // Si vive en casa -> cualquier tamaño
+                // CASA -> cualquier tamaño
                 if (solicitud.Usuario.TipoVivienda == TipoVivienda.Casa)
                 {
                     aceptada = true;
                 }
 
-                // Si vive en departamento -> chico o mediano
+                // DEPARTAMENTO -> chico o mediano
                 else if (
                     solicitud.Usuario.TipoVivienda == TipoVivienda.Departamento
                     &&
@@ -247,13 +243,17 @@ namespace HuellasDeEsperanza.Controllers
                 {
                     aceptada = true;
                 }
+                else
+                {
+                    solicitud.DetalleRechazo =
+                        "Las personas que viven en departamento solo pueden adoptar mascotas chicas o medianas.";
+                }
 
-                // Si se acepta la adopción
+                // SI SE ACEPTA
                 if (aceptada)
                 {
                     solicitud.Mascota.Adoptado = true;
 
-                    // dueño de la mascota
                     solicitud.Mascota.UsuarioId = solicitud.UsuarioId;
                 }
             }
@@ -269,15 +269,19 @@ namespace HuellasDeEsperanza.Controllers
                         m.UsuarioId == solicitud.UsuarioId
                         && m.Transitado);
 
-                // Solo puede tener un tránsito
+                // SOLO UN TRÁNSITO
                 if (!yaTieneTransito)
                 {
                     aceptada = true;
 
                     solicitud.Mascota.Transitado = true;
 
-                    // usuario tránsito
                     solicitud.Mascota.UsuarioId = solicitud.UsuarioId;
+                }
+                else
+                {
+                    solicitud.DetalleRechazo =
+                        "El usuario ya tiene una mascota en tránsito.";
                 }
             }
 
@@ -285,17 +289,43 @@ namespace HuellasDeEsperanza.Controllers
             // RESULTADO FINAL
             // ==========================================
 
-            solicitud.Estado = aceptada
-                ? EstadoSolicitud.Aceptada
-                : EstadoSolicitud.Rechazada;
+            if (aceptada)
+            {
+                solicitud.Estado = EstadoSolicitud.Aceptada;
 
-            solicitud.FechaAuditoria = DateTime.Now;
+                solicitud.FechaAuditoria = DateTime.Now;
+
+                // empleado que auditó
+                solicitud.AuditadoPorId = 3;
+            }
+            else
+            {
+                solicitud.Estado = EstadoSolicitud.Rechazada;
+
+                solicitud.FechaAuditoria = DateTime.Now;
+
+                solicitud.AuditadoPorId = 3;
+
+                // motivo rechazo
+                if (solicitud.Tipo == TipoSolicitud.Adopcion)
+                {
+                    solicitud.DetalleRechazo =
+                        "No cumple los requisitos de vivienda para el tamaño de la mascota.";
+                }
+                else
+                {
+                    solicitud.DetalleRechazo =
+                        "El usuario ya posee una mascota en tránsito.";
+                }
+
+                // ELIMINAR SOLICITUD RECHAZADA
+                _context.Solicitudes.Remove(solicitud);
+            }
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
-
 
 
         // GET: Solicitud/Delete/5
