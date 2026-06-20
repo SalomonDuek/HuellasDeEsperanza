@@ -22,7 +22,9 @@
 
             @if (logueado)
             {
-                <a asp-controller="Mascota" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver mascotas disponibles</a>
+                <a asp-controller="Mascota" asp-action="Adopcion" class="btn btn-primary btn-lg mt-2">Ver mascotas disponibles</a>
+                <a asp-controller="Mascota" asp-action="Create" class="btn btn-primary btn-lg mt-2">Agregar mascota</a>
+
                 <a asp-controller="Usuarios" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver usuarios</a> // Agregado botón para ver usuarios MICA
            
                 <a asp-controller="Solicitud" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver solicitudes</a> // Agregado botón para ver solicitudes MICA
@@ -45,7 +47,7 @@
 
             @if (logueado)
             {
-                <a asp-controller="Mascota" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver mascotas para tránsito</a>
+                <a asp-controller="Mascota" asp-action="Transito" class="btn btn-primary btn-lg mt-2">Ver mascotas para tránsito</a>
             }
             else
             {

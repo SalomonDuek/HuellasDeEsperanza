@@ -8,6 +8,12 @@ namespace HuellasDeEsperanza.Models
         Gato
     }
 
+    public enum Disponibilidad
+    {
+        Adoptable,
+        Transitable
+    }
+
     public enum Tamanio
     {
         Chico,
@@ -17,7 +23,6 @@ namespace HuellasDeEsperanza.Models
 
     public enum EstadoMedico
     {
-        AmbulatorioConBaja,
         EnTratamiento,
         AltaMedica
     }
@@ -44,21 +49,33 @@ namespace HuellasDeEsperanza.Models
         [Required(ErrorMessage = "El tamaño es obligatorio")]
         public Tamanio Tamanio { get; set; }
 
-        [Required]
-        public EstadoMedico Estado { get; set; } = EstadoMedico.AmbulatorioConBaja;
+        [Required(ErrorMessage = "El estado médico es obligatorio")]
+        public EstadoMedico Estado { get; set; }
 
+        // Se calcula automáticamente según el Estado
+        public Disponibilidad Disponibilidad { get; set; }
+
+        // Sanitarios
         public bool EstaVacunada { get; set; } = false;
+
         public bool EstaCastrada { get; set; } = false;
+
         public bool EstaDesparasitada { get; set; } = false;
 
-        // Disponible se calcula: no puede estar disponible si tiene AmbulatorioConBaja
-        public bool EstaDisponible { get; set; } = false;
+        // Disponibilidad general
+        public bool EstaDisponible { get; set; } = true;
 
-        // Relación con Usuario dueño (null si no tiene dueño)
+        // Control de adopción/tránsito
+        public bool Adoptado { get; set; } = false;
+
+        public bool Transitado { get; set; } = false;
+
+        // Relación con usuario
         public int? UsuarioId { get; set; }
+
         public Usuario? Usuario { get; set; }
 
-        // Solicitudes asociadas a esta mascota
+        // Solicitudes asociadas
         public ICollection<Solicitud> Solicitudes { get; set; } = new List<Solicitud>();
     }
 }

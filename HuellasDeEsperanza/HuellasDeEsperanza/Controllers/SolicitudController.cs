@@ -78,7 +78,7 @@ namespace HuellasDeEsperanza.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearSolicitud(int mascotaId)
+        public async Task<IActionResult> CrearSolicitudAdopcion(int mascotaId)
         {
             var solicitud = new Solicitud
             {
@@ -97,6 +97,39 @@ namespace HuellasDeEsperanza.Controllers
 
             return RedirectToAction("Index", "Mascota");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CrearSolicitudTransito(int mascotaId)
+        {
+            var solicitud = new Solicitud
+            {
+                Tipo = TipoSolicitud.Transito,
+                Estado = EstadoSolicitud.Pendiente,
+                FechaCreacion = DateTime.Now,
+
+                // cambiar por el usuario logueado después
+                UsuarioId = 3,
+
+                MascotaId = mascotaId
+            };
+
+            _context.Solicitudes.Add(solicitud);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Mascota");
+        }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -155,6 +188,23 @@ namespace HuellasDeEsperanza.Controllers
             ViewData["MascotaId"] = new SelectList(_context.Mascotas, "Id", "Descripcion", solicitud.MascotaId);
             ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Contrasenia", solicitud.UsuarioId);
             return View(solicitud);
+        }
+        public async Task<IActionResult> Adopcion()
+        {
+            var mascotas = await _context.Mascotas
+                .Where(m => m.EstaDisponible)
+                .ToListAsync();
+
+            return View("Index", mascotas);
+        }
+
+        public async Task<IActionResult> Transito()
+        {
+            var mascotas = await _context.Mascotas
+                .Where(m => m.EstaDisponible)
+                .ToListAsync();
+
+            return View("Index", mascotas);
         }
 
         // GET: Solicitud/Delete/5
