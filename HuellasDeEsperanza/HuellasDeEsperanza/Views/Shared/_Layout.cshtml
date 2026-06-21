@@ -9,14 +9,56 @@
     <link rel="stylesheet" href="~/HuellasDeEsperanza.styles.css" asp-append-version="true" />
 </head>
 <body>
-<header>
-    <nav id="barra_de_navegacion" class="container-fluid">
-        <img src="~/images/logoHuellasEsperanza.png" alt="Logo" id="logo">
-        <h1 class="m-0">
-            <a asp-controller="Home" asp-action="Index">HUELLAS DE ESPERANZA 🐾</a>
-        </h1>
-    </nav>
-</header>
+    <header>
+        <nav id="barra_de_navegacion" class="container-fluid d-flex align-items-center justify-content-between flex-wrap">
+            <div class="d-flex align-items-center">
+                <img src="~/images/logoHuellasEsperanza.png" alt="Logo" id="logo">
+                <h1 class="m-0">
+                    <a asp-controller="Home" asp-action="Index">HUELLAS DE ESPERANZA 🐾</a>
+                </h1>
+            </div>
+
+            <ul class="navbar-nav d-flex flex-row gap-3 align-items-center mb-0">
+                @if (Context.Session.GetInt32("UsuarioId") != null)
+                {
+                    var rol = Context.Session.GetString("UsuarioRol");
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Solicitud" asp-action="Index">
+                            @(rol == "Empleado" ? "Solicitudes" : "Mis Solicitudes")
+                        </a>
+                    </li>
+
+                    @if (rol == "Empleado")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                        </li>
+                    }
+
+                    <li class="nav-item">
+                        <span class="nav-link text-light">
+                            Hola, @Context.Session.GetString("UsuarioNombre")
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Usuarios" asp-action="Logout" method="post" class="m-0">
+                            <button type="submit" class="btn btn-sm btn-outline-light">Cerrar sesión</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Usuarios" asp-action="Login">Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-sm btn-hde" asp-controller="Usuarios" asp-action="Register">Registrarse</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </header>
 
 <div class="container my-5">
     <main role="main" class="pb-3">

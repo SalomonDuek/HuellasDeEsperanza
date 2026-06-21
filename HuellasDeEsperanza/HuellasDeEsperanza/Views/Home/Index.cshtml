@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
-    bool logueado = Context.Session.GetString("UsuarioSesion") == null; // MICA cambie a == null
+    bool logueado = Context.Session.GetInt32("UsuarioId") != null;
 }
 
 <div class="text-center my-5 py-4">
@@ -23,15 +23,11 @@
             @if (logueado)
             {
                 <a asp-controller="Mascota" asp-action="Adopcion" class="btn btn-primary btn-lg mt-2">Ver mascotas para adopcion</a>
-                <a asp-controller="Mascota" asp-action="Create" class="btn btn-primary btn-lg mt-2">Agregar mascota</a>
-
-                <a asp-controller="Usuarios" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver usuarios</a> // Agregado botón para ver usuarios MICA
-           
-                <a asp-controller="Solicitud" asp-action="Index" class="btn btn-primary btn-lg mt-2">Ver solicitudes</a> // Agregado botón para ver solicitudes MICA
             }
+
             else
             {
-                <a asp-controller="Usuarios" asp-action="Register" class="btn btn-primary btn-lg mt-2">Quiero adoptar</a>
+                <a asp-controller="Usuarios" asp-action="Register" class="btn btn-primary btn-lg mt-2">Quiero adoptar una mascota</a>
             }
         </div>
     </section>
@@ -51,7 +47,7 @@
             }
             else
             {
-                <a asp-controller="Usuarios" asp-action="Register" class="btn btn-primary btn-lg mt-2">Quiero ser tránsito</a>
+                <a asp-controller="Usuarios" asp-action="Register" class="btn btn-primary btn-lg mt-2">Quiero ser tránsito de una mascota</a>
             }
         </div>
     </section>

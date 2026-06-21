@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HuellasDeEsperanza.Data;
 using HuellasDeEsperanza.Models;
+using HuellasDeEsperanza.Helpers;
 
 namespace HuellasDeEsperanza.Controllers
 {
@@ -18,10 +19,7 @@ namespace HuellasDeEsperanza.Controllers
             _env = env;
         }
 
-        // ==========================================
         // INDEX GENERAL
-        // ==========================================
-
         public async Task<IActionResult> Index()
         {
             return View(await _context.Mascotas
@@ -30,10 +28,7 @@ namespace HuellasDeEsperanza.Controllers
                 .ToListAsync());
         }
 
-        // ==========================================
         // MASCOTAS PARA ADOPCIÓN
-        // ==========================================
-
         public async Task<IActionResult> Adopcion()
         {
             ViewBag.TipoVista = "Adopcion";
@@ -47,10 +42,7 @@ namespace HuellasDeEsperanza.Controllers
             return View("Index", mascotas);
         }
 
-        // ==========================================
         // MASCOTAS PARA TRÁNSITO
-        // ==========================================
-
         public async Task<IActionResult> Transito()
         {
             ViewBag.TipoVista = "Transito";
@@ -64,10 +56,7 @@ namespace HuellasDeEsperanza.Controllers
             return View("Index", mascotas);
         }
 
-        // ==========================================
         // DETAILS
-        // ==========================================
-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -83,18 +72,17 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // ==========================================
         // CREATE GET
-        // ==========================================
 
         public IActionResult Create()
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             return View();
         }
 
-        // ==========================================
         // CREATE POST
-        // ==========================================
 
         [HttpPost]
         public async Task<IActionResult> Create(
@@ -102,12 +90,12 @@ namespace HuellasDeEsperanza.Controllers
             Mascota mascota,
             IFormFile? imagenArchivo)
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             mascota.FechaIngreso = DateTime.Now;
 
-            // ==========================================
             // CALCULAR ESTADO MÉDICO
-            // ==========================================
-
             if (mascota.EstaVacunada &&
                 mascota.EstaCastrada &&
                 mascota.EstaDesparasitada)
@@ -125,9 +113,7 @@ namespace HuellasDeEsperanza.Controllers
 
             if (ModelState.IsValid)
             {
-                // ==========================================
                 // GUARDAR IMAGEN
-                // ==========================================
 
                 if (imagenArchivo != null && imagenArchivo.Length > 0)
                 {
@@ -148,12 +134,13 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // ==========================================
         // EDIT GET
-        // ==========================================
 
         public async Task<IActionResult> Edit(int? id)
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             if (id == null)
                 return NotFound();
 
@@ -165,10 +152,7 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // ==========================================
         // EDIT POST
-        // ==========================================
-
         [HttpPost]
         public async Task<IActionResult> Edit(
             int id,
@@ -176,6 +160,9 @@ namespace HuellasDeEsperanza.Controllers
             Mascota mascota,
             IFormFile? imagenArchivo)
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             if (id != mascota.Id)
                 return NotFound();
 
@@ -202,9 +189,7 @@ namespace HuellasDeEsperanza.Controllers
                     mascotaDb.Adoptado = mascota.Adoptado;
                     mascotaDb.Transitado = mascota.Transitado;
 
-                    // ==========================================
                     // RECALCULAR ESTADO Y DISPONIBILIDAD
-                    // ==========================================
 
                     if (mascotaDb.EstaVacunada &&
                         mascotaDb.EstaCastrada &&
@@ -244,12 +229,12 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // ==========================================
         // DELETE GET
-        // ==========================================
-
         public async Task<IActionResult> Delete(int? id)
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             if (id == null)
                 return NotFound();
 
@@ -262,27 +247,25 @@ namespace HuellasDeEsperanza.Controllers
             return View(mascota);
         }
 
-        // ==========================================
         // DELETE POST
-        // ==========================================
 
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             var mascota = await _context.Mascotas.FindAsync(id);
 
             if (mascota != null)
             {
-                // BORRAR SOLICITUDES RELACIONADAS
                 var solicitudes = _context.Solicitudes
                     .Where(s => s.MascotaId == mascota.Id);
 
                 _context.Solicitudes.RemoveRange(solicitudes);
 
-                // BORRAR IMAGEN
                 EliminarImagenExistente(mascota.Imagen);
 
-                // BORRAR MASCOTA
                 _context.Mascotas.Remove(mascota);
             }
 
@@ -291,10 +274,7 @@ namespace HuellasDeEsperanza.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ==========================================
         // GUARDAR IMAGEN
-        // ==========================================
-
         private async Task<string> GuardarImagenAsync(IFormFile archivo)
         {
             var carpeta = Path.Combine(_env.WebRootPath, CARPETA_FOTOS);
@@ -317,10 +297,7 @@ namespace HuellasDeEsperanza.Controllers
             return nombreArchivo;
         }
 
-        // ==========================================
         // ELIMINAR IMAGEN
-        // ==========================================
-
         private void EliminarImagenExistente(string? nombreImagen)
         {
             if (string.IsNullOrEmpty(nombreImagen))
@@ -337,9 +314,7 @@ namespace HuellasDeEsperanza.Controllers
             }
         }
 
-        // ==========================================
         // EXISTS
-        // ==========================================
 
         private bool MascotaExists(int id)
         {

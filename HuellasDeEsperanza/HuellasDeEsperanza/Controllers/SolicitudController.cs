@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HuellasDeEsperanza.Data;
 using HuellasDeEsperanza.Models;
+using HuellasDeEsperanza.Helpers;
 
 namespace HuellasDeEsperanza.Controllers
 {
@@ -20,17 +21,29 @@ namespace HuellasDeEsperanza.Controllers
         }
 
         // GET: Solicitud
-
+        // Empleado/Admin ven todas. Adoptante ve solo las propias.
         public async Task<IActionResult> Index()
         {
-            var solicitudes = await _context.Solicitudes
+            if (!HttpContext.Session.EstaLogueado())
+                return RedirectToAction("Login", "Usuarios");
+
+            var query = _context.Solicitudes
                 .Include(s => s.AuditadoPor)
                 .Include(s => s.Mascota)
                 .Include(s => s.Usuario)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+            {
+                var usuarioId = HttpContext.Session.GetUsuarioId()!.Value;
+                query = query.Where(s => s.UsuarioId == usuarioId);
+            }
+
+            var solicitudes = await query.ToListAsync();
 
             return View(solicitudes);
         }
+
         // GET: Solicitud/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -85,15 +98,15 @@ namespace HuellasDeEsperanza.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearSolicitudAdopcion(int mascotaId)
         {
+            if (!HttpContext.Session.EstaLogueado())
+                return RedirectToAction("Login", "Usuarios");
+
             var solicitud = new Solicitud
             {
                 Tipo = TipoSolicitud.Adopcion,
                 Estado = EstadoSolicitud.Pendiente,
                 FechaCreacion = DateTime.Now,
-
-                // cambiar por el usuario logueado después
-                UsuarioId = 3,
-
+                UsuarioId = HttpContext.Session.GetUsuarioId()!.Value,
                 MascotaId = mascotaId
             };
 
@@ -107,15 +120,15 @@ namespace HuellasDeEsperanza.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearSolicitudTransito(int mascotaId)
         {
+            if (!HttpContext.Session.EstaLogueado())
+                return RedirectToAction("Login", "Usuarios");
+
             var solicitud = new Solicitud
             {
                 Tipo = TipoSolicitud.Transito,
                 Estado = EstadoSolicitud.Pendiente,
                 FechaCreacion = DateTime.Now,
-
-                // cambiar por el usuario logueado después
-                UsuarioId = 3,
-
+                UsuarioId = HttpContext.Session.GetUsuarioId()!.Value,
                 MascotaId = mascotaId
             };
 
@@ -181,6 +194,7 @@ namespace HuellasDeEsperanza.Controllers
             ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Nombre", solicitud.UsuarioId);
             return View(solicitud);
         }
+
         public async Task<IActionResult> Adopcion()
         {
             var mascotas = await _context.Mascotas
@@ -202,6 +216,9 @@ namespace HuellasDeEsperanza.Controllers
         [HttpPost]
         public async Task<IActionResult> Verificar(int id)
         {
+            if (!HttpContext.Session.EsEmpleadoOAdmin())
+                return RedirectToAction("Login", "Usuarios");
+
             var solicitud = await _context.Solicitudes
                 .Include(s => s.Usuario)
                 .Include(s => s.Mascota)
@@ -288,6 +305,8 @@ namespace HuellasDeEsperanza.Controllers
             // RESULTADO FINAL
             // ==========================================
 
+            var empleadoId = HttpContext.Session.GetUsuarioId()!.Value;
+
             if (aceptada)
             {
                 solicitud.Estado = EstadoSolicitud.Aceptada;
@@ -295,7 +314,7 @@ namespace HuellasDeEsperanza.Controllers
                 solicitud.FechaAuditoria = DateTime.Now;
 
                 // empleado que auditó
-                solicitud.AuditadoPorId = 3;
+                solicitud.AuditadoPorId = empleadoId;
             }
             else
             {
@@ -303,7 +322,7 @@ namespace HuellasDeEsperanza.Controllers
 
                 solicitud.FechaAuditoria = DateTime.Now;
 
-                solicitud.AuditadoPorId = 3;
+                solicitud.AuditadoPorId = empleadoId;
 
                 // motivo rechazo
                 if (solicitud.Tipo == TipoSolicitud.Adopcion)
@@ -316,8 +335,6 @@ namespace HuellasDeEsperanza.Controllers
                     solicitud.DetalleRechazo =
                         "El usuario ya posee una mascota en tránsito.";
                 }
-
-               
             }
 
             await _context.SaveChangesAsync();
