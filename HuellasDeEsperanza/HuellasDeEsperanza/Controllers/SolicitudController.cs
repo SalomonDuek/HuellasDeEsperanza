@@ -92,7 +92,7 @@ namespace HuellasDeEsperanza.Controllers
                 FechaCreacion = DateTime.Now,
 
                 // cambiar por el usuario logueado después
-                UsuarioId = 3,
+                UsuarioId = 1,
 
                 MascotaId = mascotaId
             };
@@ -114,7 +114,7 @@ namespace HuellasDeEsperanza.Controllers
                 FechaCreacion = DateTime.Now,
 
                 // cambiar por el usuario logueado después
-                UsuarioId = 3,
+                UsuarioId = 1,
 
                 MascotaId = mascotaId
             };
