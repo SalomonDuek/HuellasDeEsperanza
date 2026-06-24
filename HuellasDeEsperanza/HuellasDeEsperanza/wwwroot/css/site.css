@@ -1,22 +1,160 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 
 body {
-  margin-bottom: 60px;
+    background-color: #f8f9fa;
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+
+#barra_de_navegacion {
+    background-color: #285882;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+#logo {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px;
+}
+
+#barra_de_navegacion a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+footer {
+    background-color: #404040;
+    color: white;
+    padding: 10px 5px;
+    width: 100%;
+}
+
+footer h5 {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+footer p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: white;
+}
+
+footer a:hover {
+    color: #e83e8c;
+    text-decoration: none;
+}
+
+
+footer .fs-2 a {
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+footer .fs-2 a:hover {
+    transform: scale(1.2);
+}
+
+#facebook:hover {color: #1877f2 !important;}
+#instagram:hover {color: #e83e8c !important;}
+#whatsapp:hover {color: #25d366 !important;}
+#mail:hover {color: #ff6b6b !important;}
+
+
+
+/* CSS ESPECIAL PARA LOS FORMULARIOS*/
+
+/* Contenedor del Formulario (Tarjetas) */
+.card-form {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(40, 88, 130, 0.15);
+    border: 1px solid rgba(40, 88, 130, 0.1);
+    margin-top: 20px;
+}
+
+    /* Título de la Sección del Formulario */
+    .card-form .titulo-seccion {
+        color: #285882;
+        font-weight: 700;
+        font-size: 2rem;
+        position: relative;
+    }
+
+    /* Inputs y Selects del Formulario */
+    .card-form .form-control,
+    .card-form .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+
+        /* Enfoque de los campos con el azul del Refugio */
+        .card-form .form-control:focus,
+        .card-form .form-select:focus {
+            border-color: #285882;
+            box-shadow: 0 0 0 0.25rem rgba(40, 88, 130, 0.25);
+            background-color: #fff;
+        }
+
+/* El Botón Oficial del Refugio (btn-hde) */
+.btn-hde {
+    background-color: #e83e8c; /* Rosa identitario del HTML original */
+    color: white;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .btn-hde:hover {
+        background-color: #d12a75;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(232, 62, 140, 0.3);
+    }
+
+    .btn-hde:active {
+        transform: translateY(0);
+    }
+
+/* Separadores y Links */
+.card-form hr {
+    border-top: 1px solid rgba(40, 88, 130, 0.2);
+}
+
+.card-form a {
+    color: #285882;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+    .card-form a:hover {
+        color: #1a3a57;
+        text-decoration: underline;
+    }
+
+/* Validaciones de Error de .NET */
+.text-danger.small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 4px;
+    display: block;
 }

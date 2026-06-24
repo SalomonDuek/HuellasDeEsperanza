@@ -1,0 +1,114 @@
+﻿@model IEnumerable<HuellasDeEsperanza.Models.Mascota>
+@using HuellasDeEsperanza.Helpers
+
+@{
+    ViewData["Title"] = "Mascotas";
+    bool esEmpleadoOAdmin = Context.Session.EsEmpleadoOAdmin();
+}
+
+<h2>Mascotas</h2>
+
+@if (esEmpleadoOAdmin)
+{
+    <a asp-controller="Mascota" asp-action="Create" class="btn btn-primary btn-lg mt-2">Agregar mascota al refugio</a>
+}
+
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Foto</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Tamaño</th>
+            <th>Estado</th>
+            <th>Disponibilidad</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var mascota in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(mascota.Imagen))
+                    {
+                        <img src="~/images/mascotas/@mascota.Imagen"
+                             alt="@mascota.Nombre"
+                             style="width:70px;height:70px;object-fit:cover;border-radius:6px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sin foto</span>
+                    }
+                </td>
+
+                <td>@mascota.Nombre</td>
+
+                <td>@mascota.TipoMascota</td>
+
+                <td>@mascota.Tamanio</td>
+
+                <td>@mascota.Estado</td>
+
+                <td>@mascota.Disponibilidad</td>
+
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@mascota.Id"
+                       class="btn btn-sm btn-outline-secondary">
+                        Ver
+                    </a>
+
+                    <a asp-action="Edit"
+                       asp-route-id="@mascota.Id"
+                       class="btn btn-sm btn-outline-primary">
+                        Editar
+                    </a>
+
+                    <a asp-action="Delete"
+                       asp-route-id="@mascota.Id"
+                       class="btn btn-sm btn-outline-danger">
+                        Eliminar
+                    </a>
+
+                    @if (ViewBag.TipoVista == "Adopcion")
+                    {
+                        <form asp-controller="Solicitud"
+                              asp-action="CrearSolicitudAdopcion"
+                              method="post"
+                              class="mt-2">
+
+                            <input type="hidden"
+                                   name="mascotaId"
+                                   value="@mascota.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-success btn-sm">
+                                Adoptar
+                            </button>
+                        </form>
+                    }
+                    else if (ViewBag.TipoVista == "Transito")
+                    {
+                        <form asp-controller="Solicitud"
+                              asp-action="CrearSolicitudTransito"
+                              method="post"
+                              class="mt-2">
+
+                            <input type="hidden"
+                                   name="mascotaId"
+                                   value="@mascota.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-warning btn-sm">
+                                Solicitar tránsito
+                            </button>
+                        </form>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

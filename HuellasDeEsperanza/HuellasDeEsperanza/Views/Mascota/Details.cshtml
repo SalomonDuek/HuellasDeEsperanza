@@ -1,0 +1,76 @@
+﻿@model HuellasDeEsperanza.Models.Mascota
+
+@{
+    ViewData["Title"] = "Detalle de mascota";
+}
+
+<div class="container mt-4">
+    <h2>Expediente: @Model.Nombre</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-4 mb-4 text-center">
+            @if (!string.IsNullOrEmpty(Model.Imagen))
+            {
+                <img src="~/images/mascotas/@Model.Imagen"
+                     alt="@Model.Nombre"
+                     class="img-fluid rounded border shadow-sm"
+                     style="max-height: 300px; object-fit: cover; width: 100%;" />
+            }
+            else
+            {
+                <div class="bg-light border rounded d-flex align-items-center justify-content-center shadow-sm"
+                     style="height:250px;">
+                    <span class="text-muted fw-bold">Sin foto registrada</span>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-8">
+            <h4 class="mb-3 text-secondary">Datos de la Mascota</h4>
+            <dl class="row bg-white p-3 rounded border shadow-sm">
+                <dt class="col-sm-4 text-muted">Descripción</dt>
+                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Descripcion) ? "Sin descripción cargada" : Model.Descripcion)</dd>
+
+                <dt class="col-sm-4 text-muted">Tipo de Animal</dt>
+                <dd class="col-sm-8">@Model.TipoMascota</dd>
+
+                <dt class="col-sm-4 text-muted">Tamaño</dt>
+                <dd class="col-sm-8">@Model.Tamanio</dd>
+
+                <dt class="col-sm-4 text-muted">Estado Médico</dt>
+                <dd class="col-sm-8"><span class="badge bg-warning text-dark">@Model.Estado</span></dd>
+
+                <dt class="col-sm-4 text-muted">Fecha de Ingreso</dt>
+                <dd class="col-sm-8">@Model.FechaIngreso.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4 text-muted">¿Está Vacunada?</dt>
+                <dd class="col-sm-8">@(Model.EstaVacunada ? "Sí" : "No")</dd>
+
+                <dt class="col-sm-4 text-muted">¿Está Castrada?</dt>
+                <dd class="col-sm-8">@(Model.EstaCastrada ? "Sí" : "No")</dd>
+
+                <dt class="col-sm-4 text-muted">¿Está Desparasitada?</dt>
+                <dd class="col-sm-8">@(Model.EstaDesparasitada ? "Sí" : "No")</dd>
+
+                <dt class="col-sm-4 text-muted">Disponibilidad</dt>
+                <dd class="col-sm-8">
+                    <span class="badge @(Model.EstaDisponible ? "bg-success" : "bg-danger")">
+                        @(Model.EstaDisponible ? "Disponible" : "No disponible")
+                    </span>
+                </dd>
+
+                @if (Model.Usuario != null)
+                {
+                    <dt class="col-sm-4 text-muted">Operador Responsable</dt>
+                    <dd class="col-sm-8 text-primary fw-bold">@Model.Usuario.Nombre</dd>
+                }
+            </dl>
+
+            <div class="mt-3">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-4">Editar Datos</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Volver al Listado</a>
+            </div>
+        </div>
+    </div>
+</div>

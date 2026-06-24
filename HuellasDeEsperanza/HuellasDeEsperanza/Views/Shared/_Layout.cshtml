@@ -1,52 +1,99 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HuellasDeEsperanza</title>
+    <title>@ViewData["Title"] - Huellas de Esperanza</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HuellasDeEsperanza.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HuellasDeEsperanza</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" aspcontroller="Mascota" asp-action="Index">Mascota</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+        <nav id="barra_de_navegacion" class="container-fluid d-flex align-items-center justify-content-between flex-wrap">
+            <div class="d-flex align-items-center">
+                <img src="~/images/logoHuellasEsperanza.png" alt="Logo" id="logo">
+                <h1 class="m-0">
+                    <a asp-controller="Home" asp-action="Index">HUELLAS DE ESPERANZA 🐾</a>
+                </h1>
             </div>
+
+            <ul class="navbar-nav d-flex flex-row gap-3 align-items-center mb-0">
+                @if (Context.Session.GetInt32("UsuarioId") != null)
+                {
+                    var rol = Context.Session.GetString("UsuarioRol");
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Solicitud" asp-action="Index">
+                            @(rol == "Empleado" ? "Solicitudes" : "Mis Solicitudes")
+                        </a>
+                    </li>
+
+                    @if (rol == "Empleado")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                        </li>
+                    }
+
+                    <li class="nav-item">
+                        <span class="nav-link text-light">
+                            Hola, @Context.Session.GetString("UsuarioNombre")
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Usuarios" asp-action="Logout" method="post" class="m-0">
+                            <button type="submit" class="btn btn-sm btn-outline-light">Cerrar sesión</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Usuarios" asp-action="Login">Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-sm btn-hde" asp-controller="Usuarios" asp-action="Register">Registrarse</a>
+                    </li>
+                }
+            </ul>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+<div class="container my-5">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="text-light">
         <div class="container">
-            &copy; 2026 - HuellasDeEsperanza - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <h5>ESTEMOS EN CONTACTO</h5>
+                    <div class="fs-2 d-flex justify-content-center gap-3">
+                        <a href="https://www.facebook.com" target="_blank" class="text-light"><i class="fab fa-facebook" id="facebook"></i></a>
+                        <a href="https://www.instagram.com" target="_blank" class="text-light"><i class="fab fa-instagram" id="instagram"></i></a>
+                        <a href="https://wa.me/1234567890" target="_blank" class="text-light"><i class="fab fa-whatsapp" id="whatsapp"></i></a>
+                        <a href="mailto:info@refugio.org" class="text-light"><i class="far fa-envelope" id="mail"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <h5>SOBRE NOSOTROS </h5>
+                    <p><b>Conocenos</b></p>
+                    <p>Somos un refugio dedicado al rescate, cuidado y protección de animales en situación de abandono. Nuestro objetivo es brindarles una segunda oportunidad, ofreciéndoles un espacio seguro, atención veterinaria y mucho amor mientras esperan encontrar una familia definitiva.</p>
+                    <p>Creemos en la adopción responsable y en el compromiso a largo plazo, por eso trabajamos para que cada mascota encuentre un hogar donde sea querida y respetada. Además, fomentamos la concientización sobre el cuidado animal y la importancia de la castración.</p>
+                    <p>Gracias al apoyo de voluntarios y donaciones, seguimos creciendo día a día, ayudando a más perros y gatos a tener la vida que merecen.</p>
+                </div>
+            </div>
         </div>
-    </footer>
+</footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+@RenderSection("Scripts", required: false)
+
 </body>
 </html>

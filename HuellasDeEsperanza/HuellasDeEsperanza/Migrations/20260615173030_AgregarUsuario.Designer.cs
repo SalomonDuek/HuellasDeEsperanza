@@ -4,6 +4,7 @@ using HuellasDeEsperanza.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HuellasDeEsperanza.Migrations
 {
     [DbContext(typeof(HDEDbContext))]
-    partial class HDEDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615173030_AgregarUsuario")]
+    partial class AgregarUsuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,15 +33,9 @@ namespace HuellasDeEsperanza.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Adoptado")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Disponibilidad")
-                        .HasColumnType("int");
 
                     b.Property<bool>("EstaCastrada")
                         .HasColumnType("bit");
@@ -72,9 +69,6 @@ namespace HuellasDeEsperanza.Migrations
 
                     b.Property<int>("TipoMascota")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Transitado")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("UsuarioId")
                         .HasColumnType("int");
