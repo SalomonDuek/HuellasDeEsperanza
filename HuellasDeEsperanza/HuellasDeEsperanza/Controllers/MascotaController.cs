@@ -131,7 +131,7 @@ namespace HuellasDeEsperanza.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View("Index");
+            return RedirectToAction("Index", "Home");
         }
 
         // EDIT GET

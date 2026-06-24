@@ -113,7 +113,7 @@ namespace HuellasDeEsperanza.Controllers
             _context.Solicitudes.Add(solicitud);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Mascota");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
