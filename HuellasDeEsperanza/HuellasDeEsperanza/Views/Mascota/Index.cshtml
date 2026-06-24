@@ -1,11 +1,17 @@
 ﻿@model IEnumerable<HuellasDeEsperanza.Models.Mascota>
+@using HuellasDeEsperanza.Helpers
 
 @{
     ViewData["Title"] = "Mascotas";
+    bool esEmpleadoOAdmin = Context.Session.EsEmpleadoOAdmin();
 }
 
 <h2>Mascotas</h2>
 
+@if (esEmpleadoOAdmin)
+{
+    <a asp-controller="Mascota" asp-action="Create" class="btn btn-primary btn-lg mt-2">Agregar mascota al refugio</a>
+}
 
 
 <table class="table table-striped align-middle">
@@ -17,7 +23,6 @@
             <th>Tamaño</th>
             <th>Estado</th>
             <th>Disponibilidad</th>
-            <th></th>
         </tr>
     </thead>
 
